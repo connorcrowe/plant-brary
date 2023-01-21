@@ -1,0 +1,31 @@
+<label>Name</label>
+<input type="text" name="name" value="<%= plant.name %>">
+
+<div>
+    <label>Author</label>
+    <select name="author">
+    <% authors.forEach(author => { %>
+        <% if (author.id === plant.author) {%> 
+            <option selected label="<%= author.name %>" value="<%= author.id %>">
+        <% } else { %>
+            <option label="<%= author.name %>" value="<%= author.id %>">
+        <% } %>
+    <% }); %>
+    </select>
+</div>
+<div>
+    <label>Light Requirement</label>
+    <input type="text" name="lightRequirement" value="<%= plant.lightRequirement %>">
+</div>
+<div>
+    <label>Water Requirement</label>
+    <input type="text" name="waterRequirement" value="<%= plant.waterRequirement %>">
+</div>
+<div>
+    <label>Description</label>
+    <textarea name="description"><%= plant.description %></textarea>
+</div>
+<div>
+    <label>Image</label>
+    <input type="file" name="cover">
+</div>
