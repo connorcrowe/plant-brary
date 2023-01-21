@@ -8,3 +8,5 @@ Specifically looking to practice:
 - Practice best practices
     - `Nodemon` for server development
     - `dotenv` for development environment
+- Deployment tools
+    - `Render`
