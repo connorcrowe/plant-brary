@@ -44,22 +44,103 @@ router.post('/', async (req, res) => {
 
     try { 
         const newPlant = await plant.save();
-        //res.redirect(`plants/${newPlant.id}`);
-        res.redirect('plants');
+        res.redirect(`plants/${newPlant.id}`);
     } catch {
         renderNewPage(res, plant, true);
     }
 });
 
+router.get('/:id', async (req, res) => {
+    try {
+        const plant = await Plant.findById(req.params.id)
+                                 .populate('author')
+                                 .exec();
+        res.render('plants/show', { plant: plant });
+    } catch {
+        res.redirect('/');
+    }
+});
+
+// Edit plant
+router.get('/:id/edit', async (req, res) => {
+    try {
+        const plant = await Plant.findById(req.params.id);
+        renderEditPage(res, plant)
+    } catch {
+        res.redirect('/');
+    }
+});
+
+// Update plant
+router.put('/:id', async (req, res) => {
+    let plant
+
+    try { 
+        plant = await Plant.findById(req.params.id);
+        plant.name = req.body.name
+        plant.author = req.body.author
+        plant.lightRequirement = req.body.lightRequirement
+        plant.waterRequirement = req.body.waterRequirement
+        plant.description = req.body.description
+        if (req.body.cover !== null && req.body.cover !== '') {
+            
+            saveImage(plant, req.body.cover);
+        }
+        await plant.save();
+        res.redirect(`/plants/${plant.id}`);
+    } catch (err) {
+        console.log(err);
+        if (plant != null) {
+            renderEditPage(res, plant, true);
+        } else {
+            res.redirect('/');
+        }
+    }
+});
+
+// Delete plant
+router.delete('/:id', async (req, res) => {
+    let plant 
+    try {
+        plant = await Plant.findById(req.params.id);
+        await plant.remove()
+        res.redirect('/plants')
+    } catch {
+        if (plant != null) {
+            res.render('plants/show' , {
+                plant: plant,
+                errorMessage: 'Could not remove plant'
+            });
+        } else {
+            res.redirect('/');
+        }
+    }
+});
+
 async function renderNewPage(res, plant, hasError = false) {
+    renderFormPage(res, plant, 'new', hasError);
+}
+
+async function renderEditPage(res, plant, hasError = false) {
+    renderFormPage(res, plant, 'edit', hasError);
+}
+
+async function renderFormPage(res, plant, form, hasError = false) {
     try { 
         const authors = await Author.find({});
         const params = {
             authors: authors,
             plant: plant,
-        };
-        if (hasError) params.errorMessage = 'Error creating plant';
-        res.render('plants/new', params);
+        }
+        
+        if (hasError) {
+            if (form === 'edit') {
+                params.errorMessage = 'Error editing plant';
+            } else {
+                params.errorMessage = 'Error creating plant';
+            }
+        }
+        res.render(`plants/${form}`, params);
     } catch {
         res.redirect('/plants')
     }

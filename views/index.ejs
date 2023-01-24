@@ -1,6 +1,8 @@
 <h2> Recently Added </h2>
 <div>
     <% plants.forEach(plant => { %>
+        <a href="/plants/<%= plant.id %>">
         <img height="150" width="100" src="<%= plant.imagePath %>">
+        </a>
     <% }) %>
 </div>

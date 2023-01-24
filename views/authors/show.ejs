@@ -6,6 +6,8 @@
 <% if (plantsByAuthor.length > 0) {%>
     <h2>Plants by Author</h2>
     <% plantsByAuthor.forEach(plant => { %>
+        <a href="/plants/<%= plant.id %>">
         <img height="150" width="100" src="<%= plant.imagePath %>">
+        </a>
     <%  }) %>
 <% } %> 

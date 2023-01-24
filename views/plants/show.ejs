@@ -1,0 +1,12 @@
+<h2><%= plant.name %></h2>
+<img width="100" height="150" src="<%= plant.imagePath %>">
+<div>Author: <%= plant.author.name %></div>
+<div>Added Date: <%= plant.addedDate.toDateString() %></div>
+<div>Description: <%= plant.description %></div>
+<div>Light Requirement: <%= plant.lightRequirement %></div>
+<div>Water Requirement: <%= plant.waterRequirement %></div>
+
+<a href="/plants/<%= plant.id %>/edit">Edit</a>
+<a href="/authors/<%= plant.author.id %>">View Author</a>
+<%- include('../partials/deleteForm', { url: `/plants/${plant.id}`}); %>
+

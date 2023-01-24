@@ -1,0 +1,6 @@
+<h2>Edit Plant</h2> 
+<form action="/plants/<%= plant.id %>?_method=PUT" method="POST">
+    <%- include('_form_fields') %>
+    <a href="/plants">Cancel</a>
+    <button type="submit">Update</button>
+</form>
