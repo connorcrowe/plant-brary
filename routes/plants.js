@@ -2,21 +2,10 @@ const express = require('express');
 const { reset } = require('nodemon');
 const router = express.Router();
 const fs = require('fs');
-const multer = require('multer');
 const path = require('path');
-
 const Plant = require('../models/plant');
 const Author = require('../models/author');
-
-const uploadPath = path.join('public', Plant.imageBasePath);
-const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif']
-
-const upload = multer({ 
-    dest: uploadPath,
-    fileFilter: (req, file, callback) => {
-        callback(null, imageMimeTypes.includes(file.mimetype))
-    }
-})
+const imageMimeTypes = ['image/jpeg', 'image/png', 'images/gif']
 
 router.get('/', async (req, res) => {
     let query = Plant.find();
@@ -43,7 +32,7 @@ router.get('/new', async (req, res) => {
 });
 
 // Create Plant
-router.post('/', upload.single('cover'), async (req, res) => {
+router.post('/', async (req, res) => {
     const fileName = req.file != null ? req.file.filename : null;
     const plant = new Plant({
         name: req.body.name,
@@ -51,26 +40,18 @@ router.post('/', upload.single('cover'), async (req, res) => {
         lightRequirement: req.body.lightRequirement,
         waterRequirement: req.body.waterRequirement,
         description: req.body.description,
-        imageName: fileName,
     });
+
+    saveImage(plant, req.body.cover)
 
     try { 
         const newPlant = await plant.save();
         //res.redirect(`plants/${newPlant.id}`);
         res.redirect('plants');
     } catch {
-        if (plant.imageName != null) {
-            removeImage(plant.imageName);
-        }
         renderNewPage(res, plant, true);
     }
 });
-
-function removeImage(fileName) {
-    fs.unlink(path.join(uploadPath, fileName), err => {
-        if (err) console.error(err);
-    });
-}
 
 async function renderNewPage(res, plant, hasError = false) {
     try { 
@@ -83,6 +64,15 @@ async function renderNewPage(res, plant, hasError = false) {
         res.render('plants/new', params);
     } catch {
         res.redirect('/plants')
+    }
+}
+
+function saveImage(plant, imageEncoded) {
+    if (imageEncoded == null) return
+    const image = JSON.parse(imageEncoded);
+    if (image != null && imageMimeTypes.includes(image.type)) {
+        plant.image = new Buffer.from(image.data, 'base64');
+        plant.imageType = image.type;
     }
 }
 
