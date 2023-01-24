@@ -1,8 +1,6 @@
 const express = require('express');
 const { reset } = require('nodemon');
 const router = express.Router();
-const fs = require('fs');
-const path = require('path');
 const Plant = require('../models/plant');
 const Author = require('../models/author');
 const imageMimeTypes = ['image/jpeg', 'image/png', 'images/gif']
